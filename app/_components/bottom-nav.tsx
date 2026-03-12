@@ -19,59 +19,88 @@ export async function BottomNav({ activePage = "home" }: BottomNavProps) {
       : null;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-center gap-6 rounded-t-[20px] border border-border bg-background px-6 py-4">
-      <Link href="/" className="p-3">
-        <House
-          className={cn(
-            "size-6",
-            activePage === "home" ? "text-foreground" : "text-muted-foreground",
-          )}
-        />
-      </Link>
-      {calendarHref ? (
-        <Link href={calendarHref} className="p-3">
-          <Calendar
+    <nav className="fixed inset-x-0 bottom-0 z-50" aria-label="Navegação principal">
+      <div className="mx-auto max-w-xl px-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] pt-2">
+        <div className="flex items-end justify-between gap-2 rounded-3xl border border-border/70 bg-background/80 px-2 py-2 shadow-[0_-12px_30px_-20px_rgba(0,0,0,0.35)] backdrop-blur-xl">
+          <Link
+            href="/"
+            aria-label="Início"
+            aria-current={activePage === "home" ? "page" : undefined}
             className={cn(
-              "size-6",
-              activePage === "calendar"
-                ? "text-foreground"
-                : "text-muted-foreground",
+              "flex flex-1 flex-col items-center justify-center gap-1 rounded-2xl px-3 py-2 text-muted-foreground transition-colors",
+              "hover:bg-foreground/5 hover:text-foreground",
+              activePage === "home" && "bg-foreground/5 text-foreground",
             )}
-          />
-        </Link>
-      ) : (
-        <button className="p-3">
-          <Calendar
+          >
+            <House className="size-5" />
+            <span className="text-[11px] font-medium">Início</span>
+          </Link>
+
+          {calendarHref ? (
+            <Link
+              href={calendarHref}
+              aria-label="Treinos"
+              aria-current={activePage === "calendar" ? "page" : undefined}
+              className={cn(
+                "flex flex-1 flex-col items-center justify-center gap-1 rounded-2xl px-3 py-2 text-muted-foreground transition-colors",
+                "hover:bg-foreground/5 hover:text-foreground",
+                activePage === "calendar" && "bg-foreground/5 text-foreground",
+              )}
+            >
+              <Calendar className="size-5" />
+              <span className="text-[11px] font-medium">Treinos</span>
+            </Link>
+          ) : (
+            <button
+              type="button"
+              aria-label="Treinos"
+              aria-disabled="true"
+              disabled
+              className={cn(
+                "flex flex-1 flex-col items-center justify-center gap-1 rounded-2xl px-3 py-2 text-muted-foreground/60",
+              )}
+            >
+              <Calendar className="size-5" />
+              <span className="text-[11px] font-medium">Treinos</span>
+            </button>
+          )}
+
+          <div className="flex shrink-0 flex-col items-center gap-1 px-1">
+            <ChatOpenButton />
+            <span className="text-[11px] font-medium text-muted-foreground">
+              Coach
+            </span>
+          </div>
+
+          <Link
+            href="/stats"
+            aria-label="Estatísticas"
+            aria-current={activePage === "stats" ? "page" : undefined}
             className={cn(
-              "size-6",
-              activePage === "calendar"
-                ? "text-foreground"
-                : "text-muted-foreground",
+              "flex flex-1 flex-col items-center justify-center gap-1 rounded-2xl px-3 py-2 text-muted-foreground transition-colors",
+              "hover:bg-foreground/5 hover:text-foreground",
+              activePage === "stats" && "bg-foreground/5 text-foreground",
             )}
-          />
-        </button>
-      )}
-      <ChatOpenButton />
-      <Link href="/stats" className="p-3">
-        <ChartNoAxesColumn
-          className={cn(
-            "size-6",
-            activePage === "stats"
-              ? "text-foreground"
-              : "text-muted-foreground",
-          )}
-        />
-      </Link>
-      <Link href="/profile" className="p-3">
-        <UserRound
-          className={cn(
-            "size-6",
-            activePage === "profile"
-              ? "text-foreground"
-              : "text-muted-foreground",
-          )}
-        />
-      </Link>
+          >
+            <ChartNoAxesColumn className="size-5" />
+            <span className="text-[11px] font-medium">Stats</span>
+          </Link>
+
+          <Link
+            href="/profile"
+            aria-label="Perfil"
+            aria-current={activePage === "profile" ? "page" : undefined}
+            className={cn(
+              "flex flex-1 flex-col items-center justify-center gap-1 rounded-2xl px-3 py-2 text-muted-foreground transition-colors",
+              "hover:bg-foreground/5 hover:text-foreground",
+              activePage === "profile" && "bg-foreground/5 text-foreground",
+            )}
+          >
+            <UserRound className="size-5" />
+            <span className="text-[11px] font-medium">Perfil</span>
+          </Link>
+        </div>
+      </div>
     </nav>
   );
 }

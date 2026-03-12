@@ -12,6 +12,8 @@ import { BottomNav } from "@/app/_components/bottom-nav";
 import { StreakBanner } from "./_components/streak-banner";
 import { StatsHeatmap } from "./_components/stats-heatmap";
 import { StatCard } from "./_components/stat-card";
+import { AppBar } from "@/app/_components/app-bar";
+import { Wordmark } from "@/app/_components/wordmark";
 
 function formatTotalTime(totalSeconds: number): string {
   const hours = Math.floor(totalSeconds / 3600);
@@ -56,15 +58,8 @@ export default async function StatsPage() {
   } = statsResponse.data;
 
   return (
-    <div className="flex min-h-svh flex-col bg-background pb-24">
-      <div className="flex h-14 items-center px-5">
-        <p
-          className="text-[22px] uppercase leading-[1.15] text-foreground"
-          style={{ fontFamily: "var(--font-anton)" }}
-        >
-          Fit.ai
-        </p>
-      </div>
+    <div className="mx-auto flex min-h-svh w-full max-w-xl flex-col bg-background pb-[calc(env(safe-area-inset-bottom)+6rem)]">
+      <AppBar left={<Wordmark />} />
 
       <div className="px-5">
         <StreakBanner workoutStreak={workoutStreak} />

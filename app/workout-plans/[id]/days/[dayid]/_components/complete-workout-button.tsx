@@ -3,6 +3,7 @@
 import { useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { completeWorkoutAction } from "../_actions";
+import { Loader2 } from "lucide-react";
 
 interface CompleteWorkoutButtonProps {
   workoutPlanId: string;
@@ -30,7 +31,14 @@ export function CompleteWorkoutButton({
       disabled={isPending}
       className="w-full rounded-full py-3 font-heading text-sm font-semibold"
     >
-      Marcar como concluído
+      {isPending ? (
+        <>
+          <Loader2 className="size-4 animate-spin" />
+          Salvando...
+        </>
+      ) : (
+        "Marcar como concluído"
+      )}
     </Button>
   );
 }

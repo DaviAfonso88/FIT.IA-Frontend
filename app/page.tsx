@@ -9,6 +9,8 @@ import { Flame } from "lucide-react";
 import { BottomNav } from "./_components/bottom-nav";
 import { ConsistencyTracker } from "./_components/consistency-tracker";
 import { WorkoutDayCard } from "./_components/workout-day-card";
+import { Wordmark } from "@/app/_components/wordmark";
+import { Button } from "@/components/ui/button";
 
 export default async function Home() {
   const session = await authClient.getSession({
@@ -38,13 +40,14 @@ export default async function Home() {
   const userName = session.data.user.name?.split(" ")[0] ?? "";
 
   return (
-    <div className="flex min-h-svh flex-col bg-background pb-24">
+    <div className="mx-auto flex min-h-svh w-full max-w-xl flex-col bg-background pb-[calc(env(safe-area-inset-bottom)+6rem)]">
       <div className="relative flex h-[296px] shrink-0 flex-col items-start justify-between overflow-hidden rounded-b-[20px] px-5 pb-10 pt-5">
         <div className="absolute inset-0" aria-hidden="true">
           <Image
             src="/home-banner.jpg"
             alt=""
             fill
+            sizes="100vw"
             className="object-cover"
             priority
           />
@@ -57,12 +60,7 @@ export default async function Home() {
           />
         </div>
 
-        <p
-          className="relative text-[22px] uppercase leading-[1.15] text-background"
-          style={{ fontFamily: "var(--font-anton)" }}
-        >
-          Fit.ai
-        </p>
+        <Wordmark className="relative text-background" />
 
         <div className="relative flex w-full items-end justify-between">
           <div className="flex flex-col gap-1.5">
@@ -86,9 +84,14 @@ export default async function Home() {
           <h2 className="font-heading text-lg font-semibold text-foreground">
             Consistência
           </h2>
-          <button className="font-heading text-xs text-primary">
-            Ver histórico
-          </button>
+          <Button
+            variant="ghost"
+            size="sm"
+            asChild
+            className="-mr-2 h-8 px-2 text-xs"
+          >
+            <Link href="/stats">Ver histórico</Link>
+          </Button>
         </div>
 
         <div className="flex items-center gap-3">
@@ -113,13 +116,21 @@ export default async function Home() {
             <h2 className="font-heading text-lg font-semibold text-foreground">
               Treino de Hoje
             </h2>
-            <button className="font-heading text-xs text-primary">
-              Ver treinos
-            </button>
+            <Button
+              variant="ghost"
+              size="sm"
+              asChild
+              className="-mr-2 h-8 px-2 text-xs"
+            >
+              <Link href={`/workout-plans/${homeData.data.activeWorkoutPlanId}`}>
+                Ver treinos
+              </Link>
+            </Button>
           </div>
 
           <Link
             href={`/workout-plans/${todayWorkoutDay.workoutPlanId}/days/${todayWorkoutDay.id}`}
+            className="rounded-xl focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
           >
             <WorkoutDayCard
               name={todayWorkoutDay.name}

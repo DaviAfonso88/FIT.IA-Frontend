@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { BottomNav } from "@/app/_components/bottom-nav";
 import { WorkoutDayCard } from "@/app/_components/workout-day-card";
 import { RestDayCard } from "./_components/rest-day-card";
+import { Wordmark } from "@/app/_components/wordmark";
 
 const WEEKDAY_ORDER = [
   "MONDAY",
@@ -60,13 +61,14 @@ export default async function WorkoutPlanPage({
   );
 
   return (
-    <div className="flex min-h-svh flex-col bg-background pb-24">
+    <div className="mx-auto flex min-h-svh w-full max-w-xl flex-col bg-background pb-[calc(env(safe-area-inset-bottom)+6rem)]">
       <div className="relative flex h-[296px] shrink-0 flex-col items-start justify-between overflow-hidden rounded-b-[20px] px-5 pb-10 pt-5">
         <div className="absolute inset-0" aria-hidden="true">
           <Image
             src="/workout-plan-banner.png"
             alt=""
             fill
+            sizes="100vw"
             className="object-cover"
             priority
           />
@@ -79,12 +81,7 @@ export default async function WorkoutPlanPage({
           />
         </div>
 
-        <p
-          className="relative text-[22px] uppercase leading-[1.15] text-background"
-          style={{ fontFamily: "var(--font-anton)" }}
-        >
-          Fit.ai
-        </p>
+        <Wordmark className="relative text-background" />
 
         <div className="relative flex w-full items-end justify-between">
           <div className="flex flex-col gap-3">
@@ -104,7 +101,11 @@ export default async function WorkoutPlanPage({
           day.isRest ? (
             <RestDayCard key={day.id} weekDay={day.weekDay} />
           ) : (
-            <Link key={day.id} href={`/workout-plans/${id}/days/${day.id}`}>
+            <Link
+              key={day.id}
+              href={`/workout-plans/${id}/days/${day.id}`}
+              className="rounded-xl focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+            >
               <WorkoutDayCard
                 name={day.name}
                 weekDay={day.weekDay}

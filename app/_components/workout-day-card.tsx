@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Calendar, Timer, Dumbbell } from "lucide-react";
 import type { GetHomeData200TodayWorkoutDayWeekDay } from "@/app/_lib/api/fetch-generated";
+import { cn } from "@/lib/utils";
 
 const WEEKDAY_LABELS: Record<string, string> = {
   MONDAY: "SEGUNDA",
@@ -18,6 +19,7 @@ interface WorkoutDayCardProps {
   estimatedDurationInSeconds: number;
   exercisesCount: number;
   coverImageUrl?: string;
+  className?: string;
 }
 
 export function WorkoutDayCard({
@@ -26,16 +28,25 @@ export function WorkoutDayCard({
   estimatedDurationInSeconds,
   exercisesCount,
   coverImageUrl,
+  className,
 }: WorkoutDayCardProps) {
   const durationInMinutes = Math.round(estimatedDurationInSeconds / 60);
 
   return (
-    <div className="relative flex h-[200px] w-full flex-col items-start justify-between overflow-hidden rounded-xl p-5">
+    <div
+      className={cn(
+        "relative flex h-[200px] w-full flex-col items-start justify-between overflow-hidden rounded-xl p-5",
+        "transition-transform duration-200 will-change-transform",
+        "hover:-translate-y-0.5 hover:shadow-lg hover:shadow-foreground/10",
+        className,
+      )}
+    >
       {coverImageUrl && (
         <Image
           src={coverImageUrl}
           alt={name}
           fill
+          sizes="100vw"
           className="pointer-events-none object-cover"
         />
       )}

@@ -29,6 +29,8 @@ export default async function OnboardingPage() {
   }
 
   return (
-    <Chat embedded initialMessage="Quero começar a melhorar minha saúde!" />
+    <div className="mx-auto w-full max-w-xl">
+      <Chat embedded initialMessage="Quero começar a melhorar minha saúde!" />
+    </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { useQueryStates, parseAsBoolean, parseAsString } from "nuqs";
@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 const SUGGESTED_MESSAGES = ["Monte meu plano de treino"];
 
@@ -26,9 +27,10 @@ type ChatFormValues = z.infer<typeof chatFormSchema>;
 interface ChatProps {
   embedded?: boolean;
   initialMessage?: string;
+  className?: string;
 }
 
-export function Chat({ embedded = false, initialMessage }: ChatProps) {
+export function Chat({ embedded = false, initialMessage, className }: ChatProps) {
   const [chatParams, setChatParams] = useQueryStates({
     chat_open: parseAsBoolean.withDefault(false),
     chat_initial_message: parseAsString,
@@ -85,11 +87,23 @@ export function Chat({ embedded = false, initialMessage }: ChatProps) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  if (!embedded && !chatParams.chat_open) return null;
-
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setChatParams({ chat_open: false, chat_initial_message: null });
-  };
+  }, [setChatParams]);
+
+  useEffect(() => {
+    if (embedded || !chatParams.chat_open) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") handleClose();
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [embedded, chatParams.chat_open, handleClose]);
+
+  const isOpen = embedded || chatParams.chat_open;
+  if (!isOpen) return null;
 
   const onSubmit = (values: ChatFormValues) => {
     sendMessage({ text: values.message });
@@ -105,15 +119,16 @@ export function Chat({ embedded = false, initialMessage }: ChatProps) {
 
   const chatContent = (
     <div
-      className={
+      className={cn(
         embedded
           ? "flex h-svh flex-col bg-background"
-          : "flex flex-1 flex-col overflow-hidden rounded-[20px] bg-background"
-      }
+          : "flex flex-1 flex-col overflow-hidden rounded-[20px] bg-background shadow-2xl",
+        className,
+      )}
     >
       <div className="flex shrink-0 items-center justify-between border-b border-border p-5">
         <div className="flex items-center gap-2">
-          <div className="flex items-center justify-center rounded-full bg-primary/8 border border-primary/8 p-3">
+          <div className="flex items-center justify-center rounded-full border border-primary/10 bg-primary/10 p-3">
             <Sparkles className="size-[18px] text-primary" />
           </div>
           <div className="flex flex-col gap-1.5">
@@ -131,13 +146,18 @@ export function Chat({ embedded = false, initialMessage }: ChatProps) {
             <Link href="/">Acessar FIT.AI</Link>
           </Button>
         ) : (
-          <Button variant="ghost" size="icon" onClick={handleClose}>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleClose}
+            aria-label="Fechar chat"
+          >
             <X className="size-6 text-foreground" />
           </Button>
         )}
       </div>
 
-      <div className="flex-1 overflow-y-auto pb-5">
+      <div className="flex-1 overflow-y-auto pb-5 [scrollbar-gutter:stable]">
         {messages.map((message) => (
           <div
             key={message.id}
@@ -150,8 +170,8 @@ export function Chat({ embedded = false, initialMessage }: ChatProps) {
             <div
               className={
                 message.role === "assistant"
-                  ? "rounded-xl bg-secondary p-3"
-                  : "rounded-xl bg-primary p-3"
+                  ? "rounded-2xl bg-secondary p-3 shadow-xs"
+                  : "rounded-2xl bg-primary p-3 shadow-xs"
               }
             >
               {message.role === "assistant" ? (
@@ -192,7 +212,7 @@ export function Chat({ embedded = false, initialMessage }: ChatProps) {
               <button
                 key={suggestion}
                 onClick={() => handleSuggestion(suggestion)}
-                className="whitespace-nowrap rounded-full bg-primary/10 px-4 py-2 font-heading text-sm text-foreground"
+                className="whitespace-nowrap rounded-full bg-primary/10 px-4 py-2 font-heading text-sm text-foreground transition-colors hover:bg-primary/15 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
               >
                 {suggestion}
               </button>
@@ -204,6 +224,7 @@ export function Chat({ embedded = false, initialMessage }: ChatProps) {
           <form
             onSubmit={form.handleSubmit(onSubmit)}
             className="flex items-center gap-2 border-t border-border p-5"
+            aria-busy={isLoading}
           >
             <FormField
               control={form.control}
@@ -214,6 +235,8 @@ export function Chat({ embedded = false, initialMessage }: ChatProps) {
                     <Input
                       {...field}
                       placeholder="Digite sua mensagem"
+                      aria-label="Mensagem"
+                      autoComplete="off"
                       className="rounded-full border-border bg-secondary px-4 py-3 font-heading text-sm text-foreground placeholder:text-muted-foreground"
                     />
                   </FormControl>
@@ -237,9 +260,9 @@ export function Chat({ embedded = false, initialMessage }: ChatProps) {
   if (embedded) return chatContent;
 
   return (
-    <div className="fixed inset-0 z-[60]">
+    <div className="fixed inset-0 z-[60]" role="dialog" aria-modal="true">
       <div
-        className="absolute inset-0 bg-foreground/30"
+        className="absolute inset-0 bg-foreground/30 backdrop-blur-[2px]"
         onClick={handleClose}
       />
 

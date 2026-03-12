@@ -7,6 +7,8 @@ import { BottomNav } from "@/app/_components/bottom-nav";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Weight, Ruler, BicepsFlexed, User } from "lucide-react";
 import { LogoutButton } from "./_components/logout-button";
+import { AppBar } from "@/app/_components/app-bar";
+import { Wordmark } from "@/app/_components/wordmark";
 
 export default async function ProfilePage() {
   const session = await authClient.getSession({
@@ -40,21 +42,17 @@ export default async function ProfilePage() {
   const age = data?.age ?? null;
 
   return (
-    <div className="flex min-h-svh flex-col bg-background pb-24">
-      <div className="flex h-[56px] items-center px-5">
-        <p
-          className="text-[22px] uppercase leading-[1.15] text-foreground"
-          style={{ fontFamily: "var(--font-anton)" }}
-        >
-          Fit.ai
-        </p>
-      </div>
+    <div className="mx-auto flex min-h-svh w-full max-w-xl flex-col bg-background pb-[calc(env(safe-area-inset-bottom)+6rem)]">
+      <AppBar left={<Wordmark />} />
 
       <div className="flex flex-col items-center gap-5 px-5 pt-5">
         <div className="flex w-full items-center justify-between">
           <div className="flex items-center gap-3">
             <Avatar className="size-[52px]">
-              <AvatarImage src={user.image ?? undefined} alt={user.name} />
+              <AvatarImage
+                src={user.image ?? undefined}
+                alt={user.name ?? ""}
+              />
               <AvatarFallback className="text-lg">
                 {user.name?.charAt(0)?.toUpperCase()}
               </AvatarFallback>
@@ -77,7 +75,7 @@ export default async function ProfilePage() {
             </div>
             <div className="flex flex-col items-center gap-1.5">
               <span className="font-heading text-2xl font-semibold leading-[1.15] text-foreground">
-                {weightInKg ?? "-"}
+                {weightInKg != null ? weightInKg.toFixed(1) : "-"}
               </span>
               <span className="font-heading text-xs uppercase leading-[1.4] text-muted-foreground">
                 Kg

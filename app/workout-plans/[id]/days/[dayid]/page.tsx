@@ -15,6 +15,7 @@ import { BackButton } from "./_components/back-button";
 import { ExerciseCard } from "./_components/exercise-card";
 import { StartWorkoutButton } from "./_components/start-workout-button";
 import { CompleteWorkoutButton } from "./_components/complete-workout-button";
+import { AppBar } from "@/app/_components/app-bar";
 
 const WEEKDAY_LABELS: Record<string, string> = {
   MONDAY: "SEGUNDA",
@@ -39,7 +40,7 @@ const WEEKDAY_TITLE_LABELS: Record<string, string> = {
 export default async function WorkoutDayPage({
   params,
 }: {
-  params: Promise<{ id: string; dayId: string }>;
+  params: Promise<{ id: string; dayid: string }>;
 }) {
   const session = await authClient.getSession({
     fetchOptions: {
@@ -49,9 +50,9 @@ export default async function WorkoutDayPage({
 
   if (!session.data?.user) redirect("/auth");
 
-  const { id: workoutPlanId, dayId } = await params;
+  const { id: workoutPlanId, dayid: workoutDayId } = await params;
   const [workoutDayData, homeData, trainData] = await Promise.all([
-    getWorkoutDay(workoutPlanId, dayId),
+    getWorkoutDay(workoutPlanId, workoutDayId),
     getHomeData(dayjs().format("YYYY-MM-DD")),
     getUserTrainData(),
   ]);
@@ -79,17 +80,20 @@ export default async function WorkoutDayPage({
   const hasInProgressSession = !!inProgressSession;
   const hasCompletedSession = !!completedSession;
 
+  const title = hasInProgressSession || hasCompletedSession
+    ? "Treino de Hoje"
+    : WEEKDAY_TITLE_LABELS[weekDay];
+
   return (
-    <div className="flex min-h-svh flex-col bg-background pb-24">
-      <div className="flex items-center justify-between px-5 py-4">
-        <BackButton />
-        <h1 className="font-heading text-lg font-semibold text-foreground">
-          {hasInProgressSession || hasCompletedSession
-            ? "Treino de Hoje"
-            : WEEKDAY_TITLE_LABELS[weekDay]}
-        </h1>
-        <div className="size-6" />
-      </div>
+    <div className="mx-auto flex min-h-svh w-full max-w-xl flex-col bg-background pb-[calc(env(safe-area-inset-bottom)+6rem)]">
+      <AppBar
+        left={<BackButton />}
+        title={
+          <h1 className="truncate font-heading text-base font-semibold text-foreground">
+            {title}
+          </h1>
+        }
+      />
 
       <div className="px-5">
         <div className="relative flex h-[200px] w-full flex-col items-start justify-between overflow-hidden rounded-xl p-5">
@@ -98,6 +102,7 @@ export default async function WorkoutDayPage({
               src={coverImageUrl}
               alt={name}
               fill
+              sizes="100vw"
               className="pointer-events-none object-cover"
             />
           )}
@@ -136,7 +141,7 @@ export default async function WorkoutDayPage({
             {!hasInProgressSession && !hasCompletedSession && (
               <StartWorkoutButton
                 workoutPlanId={workoutPlanId}
-                workoutDayId={dayId}
+                workoutDayId={workoutDayId}
               />
             )}
             {hasCompletedSession && (
@@ -164,7 +169,7 @@ export default async function WorkoutDayPage({
         <div className="px-5 pt-5">
           <CompleteWorkoutButton
             workoutPlanId={workoutPlanId}
-            workoutDayId={dayId}
+            workoutDayId={workoutDayId}
             sessionId={inProgressSession.id}
           />
         </div>
